@@ -3,13 +3,15 @@
     <script src="https://www.puck-js.com/puck.js"></script>
   </head>
   <body>
-    <button id="test">click me</button>
+    <button id="test">click me 2</button>
     <script>
-      document.getElementById("test").addEventListener("click", () => {
+      function writeFile(name, content) {
         Puck.write(
-          `require('Storage').write('example.json',{ message: "hello world" });\n`
+          `require('Storage').write('${name}',atob(${btoa(content)}));\n`
         );
-      });
+      }
+
+      document.getElementById("test").addEventListener("click", () => {});
     </script>
   </body>
 </html>
