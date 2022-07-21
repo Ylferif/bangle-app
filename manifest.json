@@ -3,12 +3,12 @@
   "name": "Minimal Progressive Web App",
   "icons": [
     {
-      "src": "/android-chrome-512x512.png",
+      "src": "/bangle-app/android-chrome-512x512.png",
       "sizes": "512x512",
       "type": "image/png"
     }
   ],
-  "start_url": "/",
+  "start_url": "/bangle-app/",
   "theme_color": "#db7093",
   "background_color": "#222222",
   "display": "standalone"
