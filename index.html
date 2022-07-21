@@ -11,7 +11,9 @@
         );
       }
 
-      document.getElementById("test").addEventListener("click", () => {});
+      document.getElementById("test").addEventListener("click", () => {
+        writeFile("example.json", "hello world!");
+      });
     </script>
   </body>
 </html>
