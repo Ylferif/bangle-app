@@ -6,7 +6,9 @@
     <button id="test">click me</button>
     <script>
       document.getElementById("test").addEventListener("click", () => {
-        Puck.write('console.log("test")');
+        Puck.write(
+          `require('Storage').write('example.json',{ message: "hello world" });\n`
+        );
       });
     </script>
   </body>
