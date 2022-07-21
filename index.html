@@ -1,8 +1,18 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#db7093" />
+
     <script src="https://www.puck-js.com/puck.js"></script>
   </head>
   <body>
+    <input id="apiKey" />
     <button id="test">click me 2</button>
     <script>
       function writeFile(name, content) {
@@ -14,6 +24,19 @@
       document.getElementById("test").addEventListener("click", () => {
         writeFile("example.json", "hello world!");
       });
+    </script>
+    <script>
+      // Check to make sure the browser supports service workers
+      if ("serviceWorker" in navigator) {
+        navigator.serviceWorker
+          .register("/service-worker.js")
+          .then(() => {
+            console.log("Service worker registered");
+          })
+          .catch((err) => {
+            console.log("Service worker registration failed: " + err);
+          });
+      }
     </script>
   </body>
 </html>
