@@ -7,7 +7,7 @@
     <script>
       function writeFile(name, content) {
         Puck.write(
-          `require('Storage').write('${name}',atob(${btoa(content)}));\n`
+          `require('Storage').write('${name}',atob("${btoa(content)}"));\n`
         );
       }
 
