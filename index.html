@@ -3,8 +3,12 @@
     <script src="https://www.puck-js.com/puck.js"></script>
 
     <script>
-      Puck.write('console.log("test")');
+      document.getElementById("test").addEventListener("click", () => {
+        Puck.write('console.log("test")');
+      });
     </script>
   </head>
-  <body></body>
+  <body>
+    <button id="test">click me</button>
+  </body>
 </html>
