@@ -21,7 +21,7 @@
     <a class="btn btn-ghost normal-case text-xl">Bangle JS</a>
   </div>
   
-  <div class="flex justify-center align-center p-4">
+  <div class="flex flex-col justify-center items-center p-4">
     <div class="card w-96 bg-base-100 shadow-xl">
       <div class="card-body">
         <h2 class="card-title">
@@ -36,13 +36,15 @@
         </div>
 
         <div class="card-actions">
-          <button class="btn" id="test">Upload</button>
+          <button class="btn" id="upload">Upload</button>
         </div>
 
       </div>
     </div>
 
   </div>
+
+
 
 
 
@@ -56,7 +58,7 @@
     const apiKey = document.getElementById('apiKey');
     apiKey.value = localStorage.getItem('weather-api-key') || '';
 
-    document.getElementById("test").addEventListener("click", async () => {
+    document.getElementById("upload").addEventListener("click", async () => {
       const key = apiKey.value;
       localStorage.setItem('weather-api-key', key);
 
