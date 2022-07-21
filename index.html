@@ -18,7 +18,17 @@
   <body>
     <input id="apiKey" />
     <button id="test">click me 2</button>
-    <script src="/bangle-app/app.js" type="module"></script>
+    <script>
+      function writeFile(name, content) {
+        Puck.write(
+          `require('Storage').write('${name}',atob("${btoa(content)}"));\n`
+        );
+      }
+
+      document.getElementById("test").addEventListener("click", () => {
+        writeFile("example.json", "hello world!");
+      });
+    </script>
     <script>
       // Check to make sure the browser supports service workers
       if ("serviceWorker" in navigator) {
