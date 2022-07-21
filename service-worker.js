@@ -6,7 +6,7 @@
  * (style-XYZ123.css etc)
  */
 const CACHE_NAME = "mpwa-cache-v1";
-const urlsToCache = ["/"];
+const urlsToCache = ["/bangle-app/"];
 
 /**
  * Listen for the install event, which fires when the service worker is installing.
