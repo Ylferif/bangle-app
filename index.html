@@ -35,14 +35,32 @@
           <input id="apiKey" class="input input-bordered w-full" type="text">
         </div>
 
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Latitude</span>
+          </label>
+          <input id="lat" class="input input-bordered w-full" type="text" value="51.22135263436249">
+        </div>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">longitude</span>
+          </label>
+          <input id="lon" class="input input-bordered w-full" type="text" value="-1.4908872073610588">
+        </div>
+
         <div class="card-actions">
           <button class="btn" id="upload">Upload</button>
         </div>
 
-        
+
         <div class="alert alert-info shadow-lg">
           <div>
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="stroke-current flex-shrink-0 w-6 h-6"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+              class="stroke-current flex-shrink-0 w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
             <span id="alert">Ready</span>
           </div>
         </div>
@@ -54,9 +72,8 @@
 
   <script>
     function writeFile(name, content) {
-      Puck.write(
-        `require('Storage').write('${name}',atob("${btoa(content)}"));\n`
-      );
+      return new Promise((resolve) => Puck.write(
+        `require('Storage').write('${name}',atob("${btoa(content)}"));\n`, resolve));
     }
 
     const apiKey = document.getElementById('apiKey');
@@ -67,18 +84,21 @@
       try {
         await fetchAndStoreWeather();
         alert.innerText = "Successfull uploaded weather data";
-      } catch(e){
+      } catch (e) {
         alert.innerText = "Failed to upload weather data";
         console.error(e);
       }
     });
 
-    async function fetchAndStoreWeather(){
+    async function fetchAndStoreWeather() {
       const key = apiKey.value;
       localStorage.setItem('weather-api-key', key);
 
-      const data = await (await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=51.22135263436249&lon=-1.4908872073610588&units=metric&appid=${key}`)).json();
-      const now = await (await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=35&lon=139&units=metric&appid=${key}`)).json();
+      const lat = document.getElementById('lat').value;
+      const lon = document.getElementById('lon').value;
+
+      const data = await (await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${key}`)).json();
+      const now = await (await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${key}`)).json();
 
       const weather = [
         {
@@ -90,15 +110,15 @@
 
         ...data.list.map((item) => {
 
-        return {
-          dt: item.dt * 1000,
-          temp: item.main.temp,
-          weather: item.weather[0].main,
-          icon: item.weather[0].icon
-        };
+          return {
+            dt: item.dt * 1000,
+            temp: item.main.temp,
+            weather: item.weather[0].main,
+            icon: item.weather[0].icon
+          };
 
 
-      })];
+        })];
 
       const location = {
         city: data.city.name,
@@ -108,7 +128,7 @@
 
       const content = { weather, location };
 
-      writeFile('my-clock-3.app.json', JSON.stringify(content));
+      await writeFile('my-clock-3.app.json', JSON.stringify(content));
     }
   </script>
   <script>
