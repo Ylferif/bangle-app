@@ -35,20 +35,6 @@
           <input id="apiKey" class="input input-bordered w-full" type="text">
         </div>
 
-        <div class="form-control">
-          <label class="label">
-            <span class="label-text">Latitude</span>
-          </label>
-          <input id="lat" class="input input-bordered w-full" type="text" value="51.22135263436249">
-        </div>
-
-        <div class="form-control">
-          <label class="label">
-            <span class="label-text">longitude</span>
-          </label>
-          <input id="lon" class="input input-bordered w-full" type="text" value="-1.4908872073610588">
-        </div>
-
         <div class="card-actions">
           <button class="btn" id="upload">Upload</button>
         </div>
@@ -94,8 +80,12 @@
       const key = apiKey.value;
       localStorage.setItem('weather-api-key', key);
 
-      const lat = document.getElementById('lat').value;
-      const lon = document.getElementById('lon').value;
+      const { lat, lon } = await new Promise((resolve) => navigator.geolocation.getCurrentPosition((position) => {
+        resolve({
+          lat: position.coords.latitude,
+          lon: position.coords.longitude
+        });
+      }));
 
       const data = await (await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=metric&appid=${key}`)).json();
       const now = await (await fetch(`https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${key}`)).json();
