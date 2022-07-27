@@ -1,4 +1,5 @@
-const Puck = (window as any).Puck;
+import Puck from "./puck";
+
 export function runCode(connection, code) {
   return connection.write(`\x03\x10if(1){${code}}\n`);
 }
