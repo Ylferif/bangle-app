@@ -1,9 +1,9 @@
-async function writeFile(connection, name, content) {
-  await connection.write(`reset();\n`);
+import { runCode } from "./ble";
 
-  return connection.write(
-    `require('Storage').write('${name}',atob("${btoa(content)}"));\n`
-  );
+async function writeFile(connection, name, content) {
+  const code = `require('Storage').write('${name}',${content});`;
+
+  return runCode(connection, code);
 }
 
 function getLocation(): Promise<{ lat: number; lon: number }> {

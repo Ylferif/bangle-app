@@ -1,6 +1,4 @@
-function runCode(connection, code) {
-  return connection.write(`\x03\x10if(1){${code}}\n`);
-}
+import { runCode } from "./ble";
 
 export async function requestAlarms(connection) {
   const code = `

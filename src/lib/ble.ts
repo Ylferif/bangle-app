@@ -1,4 +1,7 @@
 const Puck = (window as any).Puck;
+export function runCode(connection, code) {
+  return connection.write(`\x03\x10if(1){${code}}\n`);
+}
 
 export function connect(handleMessage) {
   return new Promise((resolve, reject) =>
