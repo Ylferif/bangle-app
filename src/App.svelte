@@ -7,12 +7,16 @@
   let status = "Ready";
 
   async function handleSync() {
+    loading = true;
+
     try {
       await fetchAndStoreWeather(apiKey);
       status = "Successfully uploaded weather data";
     } catch (e) {
       status = "Failed to upload weather data";
       console.error(e);
+    } finally {
+      loading = false;
     }
   }
 </script>
