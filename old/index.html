@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/bangle-app/apple-touch-icon.png" />
+  <link rel="manifest" href="/bangle-app/manifest.json" />
+  <meta name="theme-color" content="#db7093" />
+
+  <link href="https://cdn.jsdelivr.net/npm/daisyui@2.6.0/dist/full.css" rel="stylesheet" type="text/css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script src="https://www.puck-js.com/puck.js"></script>
+</head>
+
+<body>
+  <div class="navbar bg-base-100">
+    <a class="btn btn-ghost normal-case text-xl">Bangle JS</a>
+  </div>
+  
+  <div class="flex flex-col justify-center items-center p-4">
+    <div class="card w-96 bg-base-100 shadow-xl">
+      <div class="card-body">
+        <h2 class="card-title">
+          Weather
+        </h2>
+
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">API Key</span>
+          </label>
+          <input id="apiKey" class="input input-bordered w-full" type="text">
+        </div>
+
+        <div class="card-actions">
+          <button class="btn" id="upload">Upload</button>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+
+
+
+
+  <script>
+    function writeFile(name, content) {
+      Puck.write(
+        `require('Storage').write('${name}',atob("${btoa(content)}"));\n`
+      );
+    }
+
+    const apiKey = document.getElementById('apiKey');
+    apiKey.value = localStorage.getItem('weather-api-key') || '';
+
+    document.getElementById("upload").addEventListener("click", async () => {
+      const key = apiKey.value;
+      localStorage.setItem('weather-api-key', key);
+
+      const response = await fetch(`https://api.openweathermap.org/data/2.5/forecast?lat=51.22135263436249&lon=-1.4908872073610588&units=metric&appid=${key}`);
+      const data = await response.json();
+
+      const weather = data.list.map((item) => {
+
+        return {
+          dt: item.dt * 1000,
+          temp: item.main.temp,
+          weather: item.weather[0].main,
+          icon: item.weather[0].icon
+        };
+
+
+      });
+
+      const location = {
+        city: data.city.name,
+        sunrise: data.city.sunrise,
+        sunset: data.city.sunset
+      }
+
+      writeFile('my-clock-3.app.json', JSON.stringify({ weather, location }))
+    });
+  </script>
+  <script>
+    // Check to make sure the browser supports service workers
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/bangle-app/service-worker.js")
+        .then(() => {
+          console.log("Service worker registered");
+        })
+        .catch((err) => {
+          console.log("Service worker registration failed: " + err);
+        });
+    }
+  </script>
+</body>
+
+</html>
