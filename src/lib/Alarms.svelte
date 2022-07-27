@@ -1,7 +1,6 @@
 <script lang="ts">
   import { onDestroy, onMount } from "svelte";
-
-  export let alarms = [];
+  import { alarms } from "./stores";
 
   let target: number | undefined = undefined;
   let hours = 0;
@@ -17,9 +16,9 @@
     );
   }
 
-  $: {
+  const unsubscribe = alarms.subscribe((value) => {
     const currentTime = getCurrentTime();
-    const active = alarms
+    const active = value
       .filter((a) => a.on && a.t > currentTime)
       .sort((a, b) => a.t - b.t);
     const timer = active[0];
@@ -32,7 +31,7 @@
       minutes = 0;
       seconds = 0;
     }
-  }
+  });
 
   let timeout;
   onMount(() => {
@@ -50,7 +49,10 @@
     })();
   });
 
-  onDestroy(() => clearTimeout(timeout));
+  onDestroy(() => {
+    clearTimeout(timeout);
+    unsubscribe();
+  });
 </script>
 
 <div class="card w-96 bg-base-100 shadow-xl">

@@ -1,16 +1,23 @@
 <script lang="ts">
-  import { requestAlarms } from "./lib/alarms";
   import Alarms from "./lib/Alarms.svelte";
+  import { connect } from "./lib/ble";
+  import HeartRate from "./lib/HeartRate.svelte";
+  import {
+    beginRequestHeartRate,
+    requestAlarms,
+    requestSteps,
+    requestTemperature,
+  } from "./lib/requests";
+  import Steps from "./lib/Steps.svelte";
+  import { alarms, hrm, steps, temperature } from "./lib/stores";
+  import Temperature from "./lib/Temperature.svelte";
   import { fetchAndStoreWeather } from "./lib/weather";
   import Weather from "./lib/Weather.svelte";
-
-  import { connect } from "./lib/ble";
 
   let connection;
 
   let loading = false;
   let apiKey = localStorage.getItem("weather-api-key") ?? "";
-  let alarms = [];
   let status = "Ready";
 
   function handleMessage(message) {
@@ -26,7 +33,16 @@
 
     switch (command.t) {
       case "alarms":
-        alarms = command.alarms;
+        alarms.set(command.alarms);
+        break;
+      case "temperature":
+        temperature.set(command.temperature);
+        break;
+      case "steps":
+        steps.set(command.steps);
+        break;
+      case "hrm":
+        hrm.set(command.hrm);
         break;
     }
   }
@@ -34,15 +50,15 @@
   async function handleSync() {
     loading = true;
 
-    if (connection) {
-      connection.close();
-      connection = undefined;
+    if (!connection || !connection.isOpen) {
+      connection = await connect(handleMessage);
     }
-
-    connection = await connect(handleMessage);
 
     try {
       await requestAlarms(connection);
+      await requestTemperature(connection);
+      await requestSteps(connection);
+      await beginRequestHeartRate(connection, 60000);
       await fetchAndStoreWeather(connection, apiKey);
       status = "Syncronized Successfully";
     } catch (e) {
@@ -56,7 +72,10 @@
 
 <div class="flex flex-col justify-center items-center gap-8 p-10">
   <Weather bind:apiKey />
-  <Alarms bind:alarms />
+  <Alarms />
+  <Temperature />
+  <Steps />
+  <HeartRate />
 
   <button class="btn btn-primary" class:loading on:click={handleSync}
     >{loading ? "Syncing..." : "Sync"}</button
