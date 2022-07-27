@@ -2,6 +2,7 @@
   import { fetchAndStoreWeather } from "./lib/weather";
   import Weather from "./lib/Weather.svelte";
 
+  let loading = false;
   let apiKey = localStorage.getItem("weather-api-key") ?? "";
   let status = "Ready";
 
@@ -19,7 +20,9 @@
 <div class="flex flex-col justify-center items-center gap-8 p-10">
   <Weather bind:apiKey />
 
-  <button class="btn btn-primary" on:click={handleSync}>Sync</button>
+  <button class="btn btn-primary" class:loading on:click={handleSync}
+    >{loading ? "Syncing..." : "Sync"}</button
+  >
 
   <div class="alert">{status}</div>
 </div>
