@@ -12,7 +12,6 @@
   import Steps from "./lib/Steps.svelte";
   import { connection, isConnected } from "./lib/stores";
   import Temperature from "./lib/Temperature.svelte";
-  import { fetchAndStoreWeather } from "./lib/weather";
   import Weather from "./lib/Weather.svelte";
 
   async function startStop() {
@@ -26,16 +25,10 @@
       [endRequestHeartRate]
     );
   }
-
-  async function syncWeather(event: CustomEvent<{ apiKey: string }>) {
-    await connection.one((connection) =>
-      fetchAndStoreWeather(connection, event.detail.apiKey)
-    );
-  }
 </script>
 
 <div class="flex flex-col justify-center items-center gap-8 p-10">
-  <Weather on:sync={syncWeather} />
+  <Weather />
   <Alarms />
   <Temperature />
   <Steps />

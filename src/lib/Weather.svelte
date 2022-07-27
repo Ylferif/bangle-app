@@ -1,14 +1,16 @@
 <script lang="ts">
-  import { createEventDispatcher } from "svelte";
+  import { connection } from "./stores";
+  import { fetchAndStoreWeather } from "./weather";
 
   let apiKey = localStorage.getItem("weather-api-key") ?? "";
+  let loading = false;
 
-  const dispatcher = createEventDispatcher();
-
-  function handleClick() {
-    dispatcher("sync", {
-      apiKey,
-    });
+  async function handleClick() {
+    loading = true;
+    await connection.one((connection) =>
+      fetchAndStoreWeather(connection, apiKey)
+    );
+    loading = false;
   }
 </script>
 
@@ -28,7 +30,9 @@
     </div>
 
     <div class="card-actions">
-      <button class="btn btn-secondary" on:click={handleClick}> Update </button>
+      <button class="btn btn-secondary" class:loading on:click={handleClick}>
+        Update
+      </button>
     </div>
   </div>
 </div>
