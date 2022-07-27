@@ -1,11 +1,7 @@
-declare namespace Puck {
-  function write(content: string): Promise<void>;
-}
+async function writeFile(connection, name, content) {
+  await connection.write(`reset();\n`);
 
-async function writeFile(name, content) {
-  await Puck.write(`reset();\n`);
-
-  return Puck.write(
+  return connection.write(
     `require('Storage').write('${name}',atob("${btoa(content)}"));\n`
   );
 }
@@ -47,7 +43,7 @@ function mapWeather(item: any): any {
   };
 }
 
-export async function fetchAndStoreWeather(apiKey: string) {
+export async function fetchAndStoreWeather(connection: any, apiKey: string) {
   localStorage.setItem("weather-api-key", apiKey);
 
   const { lat, lon } = await getLocation();
@@ -65,5 +61,5 @@ export async function fetchAndStoreWeather(apiKey: string) {
 
   const content = { weather, location };
 
-  await writeFile("my-clock-3.app.json", JSON.stringify(content));
+  await writeFile(connection, "my-clock-3.app.json", JSON.stringify(content));
 }
