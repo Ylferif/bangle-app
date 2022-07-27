@@ -27,10 +27,14 @@ function createConnection() {
       set([true, {}]);
 
       for(const trigger of triggers){
-        trigger(this.connection);
+        await trigger(this.connection);
       }
     },
-    disconnect() {
+    async disconnect(...cleanups) {
+      for(const cleanup of cleanups){
+        await cleanup(this.connection);
+      }
+
       if (this.connection) {
         this.connection.close();
         this.connection = undefined;
@@ -38,11 +42,24 @@ function createConnection() {
 
       set([false, {}])
     },
-    toggle(...triggers){
+    toggle(triggers, cleanups){
       if(this.connection){
-        this.disconnect();
+        this.disconnect(...cleanups);
       } else {
         this.connect(...triggers);
+      }
+    },
+    async one(operation) {
+      const wasConnected = !!this.connection;
+
+      if(!wasConnected) {
+        await this.connect();
+      }
+
+      await operation(this.connection);
+
+      if(!wasConnected){
+        await this.disconnect();
       }
     }
   }
@@ -55,6 +72,6 @@ export const alarms = derived(messages, (commands) => commands['alarms']?.alarms
 export const temperature = derived(messages, (commands) => commands['temperature']?.temperature ?? 0);
 export const steps = derived(messages, (commands) => commands['steps']?.steps ?? 0);
 export const battery = derived(messages, (commands) => commands['status']?.bat ?? 0);
-export const hrm = derived(messages, (commands) => commands['hrm']?.alarms ?? { bpm: 0, confidence: 0 });
+export const hrm = derived(messages, (commands) => commands['hrm']?.hrm ?? { bpm: 0, confidence: 0 });
 
 

@@ -4,6 +4,7 @@
   import HeartRate from "./lib/HeartRate.svelte";
   import {
     beginRequestHeartRate,
+    endRequestHeartRate,
     requestAlarms,
     requestSteps,
     requestTemperature,
@@ -11,20 +12,30 @@
   import Steps from "./lib/Steps.svelte";
   import { connection, isConnected } from "./lib/stores";
   import Temperature from "./lib/Temperature.svelte";
+  import { fetchAndStoreWeather } from "./lib/weather";
   import Weather from "./lib/Weather.svelte";
 
   async function startStop() {
     await connection.toggle(
-      requestTemperature,
-      requestAlarms,
-      requestSteps,
-      (connection) => beginRequestHeartRate(connection, 60000)
+      [
+        requestTemperature,
+        requestAlarms,
+        requestSteps,
+        (connection) => beginRequestHeartRate(connection, 10 * 60 * 1000),
+      ],
+      [endRequestHeartRate]
+    );
+  }
+
+  async function syncWeather(event: CustomEvent<{ apiKey: string }>) {
+    await connection.one((connection) =>
+      fetchAndStoreWeather(connection, event.detail.apiKey)
     );
   }
 </script>
 
 <div class="flex flex-col justify-center items-center gap-8 p-10">
-  <Weather />
+  <Weather on:sync={syncWeather} />
   <Alarms />
   <Temperature />
   <Steps />

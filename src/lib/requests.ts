@@ -31,7 +31,7 @@ export async function requestSteps(connection) {
   return runCode(connection, code);
 }
 
-export async function beginRequestHeartRate(connection, timeout) {
+export async function beginRequestHeartRate(connection, timeout = undefined) {
   let code = `
     Bangle.setHRMPower(true);
     Bangle.on('HRM', (hrm) => {
@@ -45,6 +45,12 @@ export async function beginRequestHeartRate(connection, timeout) {
   if (timeout) {
     code += `setTimeout(() => Bangle.setHRMPower(false), ${timeout})`;
   }
+
+  return runCode(connection, code);
+}
+
+export async function endRequestHeartRate(connection) {
+  let code = `Bangle.setHRMPower(false);`;
 
   return runCode(connection, code);
 }
