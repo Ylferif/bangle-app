@@ -1,96 +1,60 @@
-import { readable } from "svelte/store";
+import { derived, writable } from "svelte/store";
 import { connect } from "./ble";
-import {
-  beginRequestHeartRate,
-  requestAlarms,
-  requestSteps,
-  requestTemperature,
-} from "./requests";
 
-let connection;
-const listeners = new Map();
+function createConnection() {
+  const { subscribe, update, set } = writable([false, {}]);
 
-function onMessage(
-  handleConnect: (_connection) => void,
-  handleMessage: (message) => void
-) {
-  listeners.set(handleConnect, { handleConnect, handleMessage });
+  return {
+    subscribe,
+    async connect(...triggers) {
+      this.connection = await connect((message) => {
+        let command;
+        try {
+          command = JSON.parse(message);
+        } catch (e) {
+          console.warn("Could not parse message", message);
+          return;
+        }
 
-  return () => {
-    listeners.delete(handleConnect);
-  };
-}
+        console.log("[command]", command);
 
-function onMessageType(
-  type: string,
-  handleConnect: (_connection) => void,
-  handleMessage: (message) => void
-) {
-  return onMessage(handleConnect, (message) => {
-    if (message.t === type) {
-      handleMessage(message);
+        update(([connected, state]) => [connected, {
+          ...state,
+          [command.t]: command
+        }]);
+      });
+
+      set([true, {}]);
+
+      for(const trigger of triggers){
+        trigger(this.connection);
+      }
+    },
+    disconnect() {
+      if (this.connection) {
+        this.connection.close();
+        this.connection = undefined;
+      }
+
+      set([false, {}])
+    },
+    toggle(...triggers){
+      if(this.connection){
+        this.disconnect();
+      } else {
+        this.connect(...triggers);
+      }
     }
-  });
-}
-
-export async function tryConnect(
-  additionalConnectHandlers = []
-): Promise<void> {
-  if (!connection || connection.isOpen) {
-    connection = await connect((message) => {
-      let command;
-      try {
-        command = JSON.parse(message);
-      } catch (e) {
-        console.warn("Could not parse message", message);
-        return;
-      }
-
-      console.log("[command]", command);
-
-      for (const { handleMessage } of listeners.values()) {
-        handleMessage(command);
-      }
-    });
-  }
-
-  for (const { handleConnect } of listeners.values()) {
-    handleConnect(connection);
-  }
-
-  for (const handler of additionalConnectHandlers) {
-    handler(connection);
   }
 }
 
-export const alarms = readable([], (set) => {
-  return onMessageType("alarms", requestAlarms, (command) =>
-    set(command.alarms)
-  );
-});
+export const connection = createConnection();
+export const messages = derived(connection, ([,messages]) => messages);
+export const isConnected = derived(connection, ([isConnected,]) => isConnected);
+export const alarms = derived(messages, (commands) => commands['alarms']?.alarms ?? []);
+export const temperature = derived(messages, (commands) => commands['temperature']?.temperature ?? 0);
+export const steps = derived(messages, (commands) => commands['steps']?.steps ?? 0);
+export const battery = derived(messages, (commands) => commands['status']?.bat ?? 0);
+export const hrm = derived(messages, (commands) => commands['hrm']?.alarms ?? { bpm: 0, confidence: 0 });
 
-export const temperature = readable(0, (set) => {
-  return onMessageType("temperature", requestTemperature, (command) =>
-    set(command.temperature)
-  );
-});
 
-export const steps = readable(0, (set) => {
-  return onMessageType("steps", requestSteps, (command) => set(command.steps));
-});
-
-export const battery = readable(0, (set) => {
-  return onMessageType(
-    "status",
-    () => {},
-    (command) => set(command.bat)
-  );
-});
-
-export const hrm = readable({ bpm: 0, confidence: 0 }, (set) => {
-  return onMessageType(
-    "hrm",
-    (_connection) => beginRequestHeartRate(_connection, 60000),
-    (command) => set(command.hrm)
-  );
-});

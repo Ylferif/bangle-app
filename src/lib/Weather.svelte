@@ -1,5 +1,15 @@
 <script lang="ts">
-  export let apiKey: string;
+  import { createEventDispatcher } from "svelte";
+
+  let apiKey = localStorage.getItem("weather-api-key") ?? "";
+
+  const dispatcher = createEventDispatcher();
+
+  function handleClick() {
+    dispatcher("sync", {
+      apiKey,
+    });
+  }
 </script>
 
 <div class="card w-96 bg-base-100 shadow-xl">
@@ -15,6 +25,10 @@
         type="text"
         bind:value={apiKey}
       />
+    </div>
+
+    <div class="card-actions">
+      <button class="btn btn-secondary" on:click={handleClick}> Update </button>
     </div>
   </div>
 </div>
