@@ -2,7 +2,9 @@ declare namespace Puck {
   function write(content: string): Promise<void>;
 }
 
-function writeFile(name, content) {
+async function writeFile(name, content) {
+  await Puck.write(`reset();\n`);
+
   return Puck.write(
     `require('Storage').write('${name}',atob("${btoa(content)}"));\n`
   );
@@ -36,6 +38,15 @@ async function fetchWeather(
   return response.json();
 }
 
+function mapWeather(item: any): any {
+  return {
+    dt: item.dt * 1000,
+    temp: item.main.temp,
+    weather: item.weather[0].main,
+    icon: item.weather[0].icon,
+  };
+}
+
 export async function fetchAndStoreWeather(apiKey: string) {
   localStorage.setItem("weather-api-key", apiKey);
 
@@ -44,23 +55,7 @@ export async function fetchAndStoreWeather(apiKey: string) {
   const data = await fetchWeather("forecast", lat, lon, apiKey);
   const now = await fetchWeather("weather", lat, lon, apiKey);
 
-  const weather = [
-    {
-      dt: now.dt * 1000,
-      temp: now.main.temp,
-      weather: now.weather[0].main,
-      icon: now.weather[0].icon,
-    },
-
-    ...data.list.map((item) => {
-      return {
-        dt: item.dt * 1000,
-        temp: item.main.temp,
-        weather: item.weather[0].main,
-        icon: item.weather[0].icon,
-      };
-    }),
-  ];
+  const weather = [mapWeather(now), ...data.list.map(mapWeather)];
 
   const location = {
     city: data.city.name,
