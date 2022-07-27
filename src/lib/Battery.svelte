@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { steps } from "./stores";
+  import { battery } from "./stores";
 </script>
 
 <div class="card w-96 bg-base-100 shadow-xl">
   <div class="card-body">
-    <h2 class="card-title">Steps</h2>
+    <h2 class="card-title">Battery</h2>
 
     <div class="flex gap-2">
       <svg
@@ -18,9 +18,10 @@
         <path
           stroke-linecap="round"
           stroke-linejoin="round"
-          d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+          d="M13 10V3L4 14h7v7l9-11h-7z"
         />
-      </svg>{$steps}
+      </svg>
+      {$battery}%
     </div>
   </div>
 </div>

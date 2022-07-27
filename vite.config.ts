@@ -15,16 +15,20 @@ export default defineConfig({
         "favicon.ico",
         "apple-touch-icon.png",
         "android-chrome-512x512.png",
-        "vite.svg",
       ],
       manifest: {
-        name: "My Awesome App",
-        short_name: "Bangle",
-        description: "My Awesome App description",
+        name: "Bangle JS",
+        short_name: "Bangle JS",
+        description: "Bangle JS Companion App",
         theme_color: "#ffffff",
         icons: [
           {
-            src: "android-chrome-512x512.png",
+            src: "/android-chrome-192x192.png",
+            sizes: "192x192",
+            type: "image/png",
+          },
+          {
+            src: "/android-chrome-512x512.png",
             sizes: "512x512",
             type: "image/png",
           },

@@ -58,10 +58,26 @@
 <div class="card w-96 bg-base-100 shadow-xl">
   <div class="card-body">
     <h2 class="card-title">Next Alarm</h2>
-    <span class="countdown font-mono text-2xl">
-      <span style="--value:{hours};" />:
-      <span style="--value:{minutes};" />:
-      <span style="--value:{seconds};" />
-    </span>
+    <div class="flex gap-2">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+        />
+      </svg>
+      <span class="countdown font-mono text-2xl">
+        <span style="--value:{hours};" />:
+        <span style="--value:{minutes};" />:
+        <span style="--value:{seconds};" />
+      </span>
+    </div>
   </div>
 </div>
