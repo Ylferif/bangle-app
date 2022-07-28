@@ -16,12 +16,12 @@
 
   async function startStop() {
     await connection.toggle(
-      [
-        requestTemperature,
-        requestAlarms,
-        requestSteps,
-        (connection) => beginRequestHeartRate(connection, 10 * 60 * 1000),
-      ],
+      {
+        triggers: [
+          (connection) => beginRequestHeartRate(connection, 10 * 60 * 1000),
+        ],
+        polls: [requestTemperature, requestAlarms, requestSteps],
+      },
       [endRequestHeartRate]
     );
   }

@@ -7,7 +7,7 @@ function createConnection() {
   return {
     connection: undefined,
     subscribe,
-    async connect(...triggers) {
+    async connect({ triggers, polls }) {
       this.connection = await connect((message) => {
         let command;
         try {
@@ -25,13 +25,32 @@ function createConnection() {
         }]);
       });
 
+      this.interval = setInterval(async () => {
+
+        if(!this.connection?.isOpen) {
+          clearInterval(this.interval);
+          this.interval = undefined;
+          return;
+        }
+
+        for(const poll of polls) {
+          await poll(this.connection);
+        }
+
+      }, 10 * 1000);
+
       update(([, state]) => [true, state]);
 
       for(const trigger of triggers){
         await trigger(this.connection);
       }
     },
-    async disconnect(...cleanups) {
+    async disconnect(cleanups) {
+      if(this.interval){
+        clearInterval(this.interval);
+        this.interval = undefined;
+      }
+
       for(const cleanup of cleanups){
         await cleanup(this.connection);
       }
@@ -43,11 +62,11 @@ function createConnection() {
 
       update(([, state]) => [false, state]);
     },
-    toggle(triggers, cleanups){
+    toggle(triggersAndPolls, cleanups){
       if(this.connection){
-        this.disconnect(...cleanups);
+        this.disconnect(cleanups);
       } else {
-        this.connect(...triggers);
+        this.connect(triggersAndPolls);
       }
     },
   }
