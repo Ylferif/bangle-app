@@ -1,16 +1,19 @@
 <script lang="ts">
-  import { connection } from "./stores";
+  import { connection, isConnected } from "./stores";
   import { fetchAndStoreWeather } from "./weather";
 
-  let apiKey = localStorage.getItem("weather-api-key") ?? "";
   let loading = false;
+  let apiKey = localStorage.getItem("weather-api-key") ?? "";
 
   async function handleClick() {
-    loading = true;
-    await connection.one((connection) =>
-      fetchAndStoreWeather(connection, apiKey)
-    );
-    loading = false;
+    if(connection.connection) {
+      try {
+        loading = true;
+        await fetchAndStoreWeather(connection.connection, apiKey);
+      } finally {
+        loading = false;
+      }
+    }
   }
 </script>
 
@@ -30,7 +33,7 @@
     </div>
 
     <div class="card-actions">
-      <button class="btn btn-secondary" class:loading on:click={handleClick}>
+      <button class="btn btn-secondary" disabled="{!$isConnected}" class:loading on:click={handleClick}>
         Update
       </button>
     </div>

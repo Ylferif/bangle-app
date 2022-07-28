@@ -1,10 +1,11 @@
-import { derived, writable } from "svelte/store";
+import { derived, Readable, writable } from "svelte/store";
 import { connect } from "./ble";
 
 function createConnection() {
-  const { subscribe, update, set } = writable([false, {}]);
+  const { subscribe, update, set } = writable<[boolean, Record<string, any>]>([false, {}]);
 
   return {
+    connection: undefined,
     subscribe,
     async connect(...triggers) {
       this.connection = await connect((message) => {
@@ -24,7 +25,7 @@ function createConnection() {
         }]);
       });
 
-      set([true, {}]);
+      update(([, state]) => [true, state]);
 
       for(const trigger of triggers){
         await trigger(this.connection);
@@ -40,7 +41,7 @@ function createConnection() {
         this.connection = undefined;
       }
 
-      set([false, {}])
+      update(([, state]) => [false, state]);
     },
     toggle(triggers, cleanups){
       if(this.connection){
@@ -49,19 +50,6 @@ function createConnection() {
         this.connect(...triggers);
       }
     },
-    async one(operation) {
-      const wasConnected = !!this.connection;
-
-      if(!wasConnected) {
-        await this.connect();
-      }
-
-      await operation(this.connection);
-
-      if(!wasConnected){
-        await this.disconnect();
-      }
-    }
   }
 }
 
