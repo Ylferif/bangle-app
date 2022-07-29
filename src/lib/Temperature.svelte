@@ -25,7 +25,13 @@
           stroke-linejoin="round"
           d="M9.879 16.121A3 3 0 1012.015 11L11 14H9c0 .768.293 1.536.879 2.121z"
         />
-      </svg>{$temperature - 6}&#8451; ({$temperature}&#8451;)
+      </svg>
+
+      {#if $temperature !== undefined}
+        {$temperature - 6}&#8451; ({$temperature}&#8451;)
+      {:else}
+        -
+      {/if}
     </div>
   </div>
 </div>

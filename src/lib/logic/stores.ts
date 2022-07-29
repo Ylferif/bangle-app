@@ -18,7 +18,7 @@ export interface IConnectionStore extends Readable<State> {
 
 
 function createConnection(): IConnectionStore {
-  const { subscribe, update, set } = writable<[boolean, Record<string, any>]>([false, {}]);
+  const { subscribe, update } = writable<[boolean, Record<string, any>]>([false, {}]);
 
   return {
     connection: undefined,
@@ -45,11 +45,8 @@ function createConnection(): IConnectionStore {
 
       });
 
-      this.interval = setInterval(async () => {
-
+      const poll = async () => {
         if (!this.connection?.isOpen) {
-          clearInterval(this.interval);
-          this.interval = undefined;
           return;
         }
 
@@ -57,7 +54,10 @@ function createConnection(): IConnectionStore {
           await poll(this.connection);
         }
 
-      }, 10 * 1000);
+        this.timeout = setTimeout(poll, 10 * 1000);
+      };
+
+      poll();
 
       update(([, state]) => [true, state]);
 
@@ -66,9 +66,9 @@ function createConnection(): IConnectionStore {
       }
     },
     async disconnect(cleanups) {
-      if (this.interval) {
-        clearInterval(this.interval);
-        this.interval = undefined;
+      if (this.timeout) {
+        clearTimeout(this.timeout);
+        this.timeout = undefined;
       }
 
       for (const cleanup of cleanups) {
@@ -96,9 +96,9 @@ export const connection = createConnection();
 export const messages = derived(connection, ([, messages]) => messages);
 export const isConnected = derived(connection, ([isConnected,]) => isConnected);
 export const alarms = derived(messages, (commands) => commands['alarms']?.alarms ?? []);
-export const temperature = derived(messages, (commands) => commands['temperature']?.temperature ?? 0);
-export const steps = derived(messages, (commands) => commands['steps']?.steps ?? 0);
-export const battery = derived(messages, (commands) => commands['status']?.bat ?? 0);
-export const hrm = derived(messages, (commands) => commands['hrm']?.hrm ?? { bpm: 0, confidence: 0 });
+export const temperature = derived(messages, (commands) => commands['temperature']?.temperature);
+export const steps = derived(messages, (commands) => commands['steps']?.steps);
+export const battery = derived(messages, (commands) => commands['status']?.bat);
+export const hrm = derived(messages, (commands) => commands['hrm']?.hrm);
 
 
