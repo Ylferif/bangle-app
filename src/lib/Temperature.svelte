@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { temperature } from "./stores";
+  import { temperature } from "./logic/stores";
 </script>
 
 <div class="card w-96 bg-base-100 shadow-xl">

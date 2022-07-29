@@ -1,7 +1,23 @@
 import { derived, Readable, writable } from "svelte/store";
 import { connect } from "./ble";
+import type { IPuckConnection } from "./puck";
 
-function createConnection() {
+export type State = [boolean, Record<string, any>];
+
+export type ConnectionCallback = (connection: IPuckConnection) => void;
+
+export interface IConnectionStore extends Readable<State> {
+  connection: IPuckConnection | undefined;
+  connect(setup: { triggers: ConnectionCallback[], polls: ConnectionCallback[] }): Promise<void>;
+  disconnect(cleanups: ConnectionCallback[]): Promise<void>;
+  toggle(triggersAndPolls: {
+    triggers: ConnectionCallback[],
+    polls: ConnectionCallback[]
+  }, cleanups: ConnectionCallback[]): Promise<void>
+}
+
+
+function createConnection(): IConnectionStore {
   const { subscribe, update, set } = writable<[boolean, Record<string, any>]>([false, {}]);
 
   return {
@@ -68,10 +84,10 @@ function createConnection() {
     },
     toggle(triggersAndPolls, cleanups) {
       if (this.connection) {
-        this.disconnect(cleanups);
-      } else {
-        this.connect(triggersAndPolls);
+        return this.disconnect(cleanups);
       }
+      
+      return this.connect(triggersAndPolls);
     },
   }
 }

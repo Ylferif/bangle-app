@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { battery } from "./stores";
+  import { battery } from "./logic/stores";
 </script>
 
 <div class="card w-96 bg-base-100 shadow-xl">

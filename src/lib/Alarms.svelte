@@ -1,6 +1,6 @@
 <script lang="ts">
   import { onDestroy, onMount } from "svelte";
-  import { alarms } from "./stores";
+  import { alarms } from "./logic/stores";
 
   let target: number | undefined = undefined;
   let hours = 0;

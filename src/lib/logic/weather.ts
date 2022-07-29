@@ -1,10 +1,5 @@
-import { runCode } from "./ble";
-
-async function writeFile(connection, name, content) {
-  const code = `require('Storage').write('${name}',${content});`;
-
-  return runCode(connection, code);
-}
+import { writeFile } from "./ble";
+import type { IPuckConnection } from "./puck";
 
 function getLocation(): Promise<{ lat: number; lon: number }> {
   return new Promise((resolve) =>
@@ -43,7 +38,7 @@ function mapWeather(item: any): any {
   };
 }
 
-export async function fetchAndStoreWeather(connection: any, apiKey: string) {
+export async function fetchAndStoreWeather(connection: IPuckConnection, apiKey: string): Promise<void> {
   localStorage.setItem("weather-api-key", apiKey);
 
   const { lat, lon } = await getLocation();

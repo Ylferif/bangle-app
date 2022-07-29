@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { connection, isConnected } from "./stores";
-  import { fetchAndStoreWeather } from "./weather";
+  import { connection, isConnected } from "./logic/stores";
+  import { fetchAndStoreWeather } from "./logic/weather";
 
   let loading = false;
   let apiKey = localStorage.getItem("weather-api-key") ?? "";

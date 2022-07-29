@@ -1,6 +1,7 @@
 import { runCode } from "./ble";
+import type { IPuckConnection } from "./puck";
 
-export async function requestAlarms(connection) {
+export async function requestAlarms(connection: IPuckConnection): Promise<void> {
   const code = `
     (function(){
         const alarms = require("sched").getAlarms();
@@ -11,7 +12,7 @@ export async function requestAlarms(connection) {
   return runCode(connection, code);
 }
 
-export async function requestTemperature(connection) {
+export async function requestTemperature(connection: IPuckConnection): Promise<void> {
   const code = `
     (function(){
         Bluetooth.println(JSON.stringify({ t: 'temperature', temperature: E.getTemperature() }));
@@ -21,7 +22,7 @@ export async function requestTemperature(connection) {
   return runCode(connection, code);
 }
 
-export async function requestSteps(connection) {
+export async function requestSteps(connection: IPuckConnection): Promise<void> {
   const code = `
     (function(){
         Bluetooth.println(JSON.stringify({ t: 'steps', steps: Bangle.getHealthStatus('day').steps }));
@@ -31,7 +32,7 @@ export async function requestSteps(connection) {
   return runCode(connection, code);
 }
 
-export async function beginRequestHeartRate(connection, timeout = undefined) {
+export async function beginRequestHeartRate(connection: IPuckConnection, timeout: number | undefined  = undefined): Promise<void> {
   let code = `
     Bangle.setHRMPower(true);
     Bangle.on('HRM', (hrm) => {
@@ -49,7 +50,7 @@ export async function beginRequestHeartRate(connection, timeout = undefined) {
   return runCode(connection, code);
 }
 
-export async function endRequestHeartRate(connection) {
+export async function endRequestHeartRate(connection: IPuckConnection): Promise<void> {
   let code = `Bangle.setHRMPower(false);`;
 
   return runCode(connection, code);

@@ -8,9 +8,9 @@
     requestAlarms,
     requestSteps,
     requestTemperature,
-  } from "./lib/requests";
+  } from "./lib/logic/requests";
   import Steps from "./lib/Steps.svelte";
-  import { connection, isConnected } from "./lib/stores";
+  import { connection, isConnected } from "./lib/logic/stores";
   import Temperature from "./lib/Temperature.svelte";
   import Weather from "./lib/Weather.svelte";
 
