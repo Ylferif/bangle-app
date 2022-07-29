@@ -43,6 +43,13 @@
         minutes = Math.floor(timeLeft / 60000);
         timeLeft = timeLeft - minutes * 60000;
         seconds = Math.floor(timeLeft / 1000);
+
+        if (hours + minutes + seconds <= 0) {
+          target = undefined;
+          hours = 0;
+          minutes = 0;
+          seconds = 0;
+        }
       }
 
       timeout = setTimeout(update, 1000 - (Date.now() % 1000));

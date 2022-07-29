@@ -1,16 +1,16 @@
 <script lang="ts">
-  import Alarms from "./lib/Alarms.svelte";
   import Battery from "./lib/Battery.svelte";
   import HeartRate from "./lib/HeartRate.svelte";
   import {
-    beginRequestHeartRate,
-    endRequestHeartRate,
-    requestAlarms,
-    requestSteps,
-    requestTemperature,
+  beginRequestHeartRate,
+  endRequestHeartRate,
+  requestAlarms,
+  requestSteps,
+  requestTemperature
   } from "./lib/logic/requests";
+  import { connection,isConnected } from "./lib/logic/stores";
+  import NextAlarm from "./lib/NextAlarm.svelte";
   import Steps from "./lib/Steps.svelte";
-  import { connection, isConnected } from "./lib/logic/stores";
   import Temperature from "./lib/Temperature.svelte";
   import Weather from "./lib/Weather.svelte";
 
@@ -29,7 +29,7 @@
 
 <div class="flex flex-col justify-center items-center gap-8 p-10">
   <Weather />
-  <Alarms />
+  <NextAlarm />
   <Temperature />
   <Steps />
   <HeartRate />
