@@ -131,7 +131,7 @@ function handleQueue() {
   else log(1, "Unknown queue item " + JSON.stringify(q));
 }
 
-function connect(callback) {
+function connect(callback, disconnectCallback) {
   if (!checkIfSupported()) return;
 
   var connection = {
@@ -147,7 +147,6 @@ function connect(callback) {
   };
   var btServer = undefined;
   var btService;
-  var connectionDisconnectCallback;
   var txCharacteristic;
   var rxCharacteristic;
   var txDataQueue = [];
@@ -245,6 +244,11 @@ function connect(callback) {
       //log('BT>  Device UUIDs:      ' + device.uuids.join('\n' + ' '.repeat(21)));
       device.addEventListener("gattserverdisconnected", function () {
         log(1, "Disconnected (gattserverdisconnected)");
+
+        if(disconnectCallback) {
+          disconnectCallback();
+        }
+
         connection.close();
       });
       connection.device = device;

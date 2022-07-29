@@ -4,7 +4,7 @@ export function runCode(connection, code) {
   return connection.write(`\x03\x10if(1){${code}}\n`);
 }
 
-export function connect(handleMessage) {
+export function connect(handleMessage, onDisconnect?) {
   return new Promise((resolve, reject) =>
     Puck.connect((connection) => {
       if (!connection) {
@@ -25,6 +25,6 @@ export function connect(handleMessage) {
       });
 
       resolve(connection);
-    })
+    }, onDisconnect)
   );
 }
