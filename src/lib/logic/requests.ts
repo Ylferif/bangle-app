@@ -29,8 +29,7 @@ const barStop = `Bangle.setBarometerPower(false);`;
 
 export function startBangleApp(connection: IPuckConnection): Promise<void> {
   return runCode(connection,`
-    ${hrmStart};
-    ${barStart}
+    ${hrmStart}
 
     if(global.bangleAppTimeout){
       clearTimeout(global.bangleAppTimeout);
@@ -50,7 +49,6 @@ export function startBangleApp(connection: IPuckConnection): Promise<void> {
 export function stopBangleApp(connection: IPuckConnection): Promise<void> {
   return runCode(connection, `
     ${hrmStop}
-    ${barStop}
     if(global.bangleAppTimeout){
       clearTimeout(global.bangleAppTimeout);
       global.bangleAppTimeout = undefined;
