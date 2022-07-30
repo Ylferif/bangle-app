@@ -16,12 +16,21 @@ Bangle.on('HRM', (hrm) => {
   } }));
 });
 `;
-
 const hrmStop = `Bangle.setHRMPower(false);`;
+
+const barStart = `
+Bangle.setBarometerPower(true);
+Bangle.on('pressure', (pressure) => {
+  Bluetooth.println(JSON.stringify({ t: 'pressure', pressure: pressure }));
+});
+`;
+const barStop = `Bangle.setBarometerPower(false);`;
+
 
 export function startBangleApp(connection: IPuckConnection): Promise<void> {
   return runCode(connection,`
     ${hrmStart};
+    ${barStart}
 
     if(global.bangleAppTimeout){
       clearTimeout(global.bangleAppTimeout);
@@ -41,6 +50,7 @@ export function startBangleApp(connection: IPuckConnection): Promise<void> {
 export function stopBangleApp(connection: IPuckConnection): Promise<void> {
   return runCode(connection, `
     ${hrmStop}
+    ${barStop}
     if(global.bangleAppTimeout){
       clearTimeout(global.bangleAppTimeout);
       global.bangleAppTimeout = undefined;
