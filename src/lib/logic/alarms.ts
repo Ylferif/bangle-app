@@ -7,7 +7,7 @@ export function setTimer(connection: IPuckConnection, hours: number, minutes: nu
     const id = new Date().getTime();
 
     const code = `
-        const timer = require('shed').newDefaultTimer();
+        const timer = require('sched').newDefaultTimer();
         timer.timer = ${ms};
         require('sched').setAlarm(${id}, timer);
         require('sched').reload();
