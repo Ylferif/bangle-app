@@ -1,20 +1,17 @@
-import { derived, writable } from "svelte/store";
 import type { Readable } from "svelte/store";
+import { derived, writable } from "svelte/store";
 import { connect } from "./ble";
 import type { IPuckConnection } from "./puck";
 
 export type State = [boolean, Record<string, any>];
 
-export type ConnectionCallback = (connection: IPuckConnection) => void;
+export type ConnectionCallback = (connection: IPuckConnection) => Promise<void>;
 
 export interface IConnectionStore extends Readable<State> {
   connection: IPuckConnection | undefined;
-  connect(setup: { triggers: ConnectionCallback[], polls: ConnectionCallback[] }): Promise<void>;
-  disconnect(cleanups: ConnectionCallback[]): Promise<void>;
-  toggle(triggersAndPolls: {
-    triggers: ConnectionCallback[],
-    polls: ConnectionCallback[]
-  }, cleanups: ConnectionCallback[]): Promise<void>
+  connect(): Promise<void>;
+  disconnect(): Promise<void>;
+  toggle(start: ConnectionCallback, stop: ConnectionCallback): Promise<void>
 }
 
 
@@ -24,7 +21,7 @@ function createConnection(): IConnectionStore {
   return {
     connection: undefined,
     subscribe,
-    async connect({ triggers, polls }) {
+    async connect() {
       this.connection = await connect((message) => {
         let command;
         try {
@@ -46,36 +43,9 @@ function createConnection(): IConnectionStore {
 
       });
 
-      const poll = async () => {
-        if (!this.connection?.isOpen) {
-          return;
-        }
-
-        for (const poll of polls) {
-          await poll(this.connection);
-        }
-
-        this.timeout = setTimeout(poll, 10 * 1000);
-      };
-
-      poll();
-
       update(([, state]) => [true, state]);
-
-      for (const trigger of triggers) {
-        await trigger(this.connection);
-      }
     },
-    async disconnect(cleanups) {
-      if (this.timeout) {
-        clearTimeout(this.timeout);
-        this.timeout = undefined;
-      }
-
-      for (const cleanup of cleanups) {
-        await cleanup(this.connection);
-      }
-
+    async disconnect() {
       if (this.connection) {
         this.connection.close();
         this.connection = undefined;
@@ -83,12 +53,14 @@ function createConnection(): IConnectionStore {
 
       update(([, state]) => [false, state]);
     },
-    toggle(triggersAndPolls, cleanups) {
+    async toggle(start, stop) {
       if (this.connection) {
-        return this.disconnect(cleanups);
+        await stop(this.connection);
+        await this.disconnect();
+      } else {
+        await this.connect();
+        await start(this.connection);
       }
-      
-      return this.connect(triggersAndPolls);
     },
   }
 }

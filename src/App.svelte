@@ -1,15 +1,8 @@
 <script lang="ts">
   import Battery from "./lib/Battery.svelte";
   import HeartRate from "./lib/HeartRate.svelte";
-  import { setTime } from "./lib/logic/alarms";
-  import {
-  beginRequestHeartRate,
-  endRequestHeartRate,
-  requestAlarms,
-  requestSteps,
-  requestTemperature
-  } from "./lib/logic/requests";
-  import { connection,isConnected } from "./lib/logic/stores";
+  import { startBangleApp, stopBangleApp } from "./lib/logic/requests";
+  import { connection, isConnected } from "./lib/logic/stores";
   import NextAlarm from "./lib/NextAlarm.svelte";
   import SetAlarm from "./lib/SetAlarm.svelte";
   import Steps from "./lib/Steps.svelte";
@@ -17,15 +10,7 @@
   import Weather from "./lib/Weather.svelte";
 
   async function startStop() {
-    await connection.toggle(
-      {
-        triggers: [
-          (connection) => beginRequestHeartRate(connection, 10 * 60 * 1000),
-        ],
-        polls: [setTime, requestTemperature, requestAlarms, requestSteps],
-      },
-      [endRequestHeartRate]
-    );
+    await connection.toggle(startBangleApp, stopBangleApp);
   }
 </script>
 
