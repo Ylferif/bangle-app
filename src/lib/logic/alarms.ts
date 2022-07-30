@@ -15,3 +15,14 @@ export function setTimer(connection: IPuckConnection, hours: number, minutes: nu
 
     return runCode(connection, code);
 }
+export function setTime(connection: IPuckConnection): Promise<void> {
+    const now = new Date();
+    const code = `
+        setTime(${now.getTime() / 1000});
+        if (E.setTimeZone) {
+            E.setTimeZone(${now.getTimezoneOffset() / -60});
+        }
+    `;
+    
+    return runCode(connection, code);
+}

@@ -1,6 +1,7 @@
 <script lang="ts">
   import Battery from "./lib/Battery.svelte";
   import HeartRate from "./lib/HeartRate.svelte";
+  import { setTime } from "./lib/logic/alarms";
   import {
   beginRequestHeartRate,
   endRequestHeartRate,
@@ -10,7 +11,7 @@
   } from "./lib/logic/requests";
   import { connection,isConnected } from "./lib/logic/stores";
   import NextAlarm from "./lib/NextAlarm.svelte";
-import SetAlarm from "./lib/SetAlarm.svelte";
+  import SetAlarm from "./lib/SetAlarm.svelte";
   import Steps from "./lib/Steps.svelte";
   import Temperature from "./lib/Temperature.svelte";
   import Weather from "./lib/Weather.svelte";
@@ -21,7 +22,7 @@ import SetAlarm from "./lib/SetAlarm.svelte";
         triggers: [
           (connection) => beginRequestHeartRate(connection, 10 * 60 * 1000),
         ],
-        polls: [requestTemperature, requestAlarms, requestSteps],
+        polls: [setTime, requestTemperature, requestAlarms, requestSteps],
       },
       [endRequestHeartRate]
     );
