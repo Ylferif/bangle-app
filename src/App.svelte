@@ -23,13 +23,7 @@
   <HeartRate />
   <Battery />
 
-  <div class="card w-96 bg-base-200 shadow-xl">
-    <div class="card-body">
-      <div class="card-actions">
-        <button class="btn btn-primary" on:click={startStop}
-          >{$isConnected ? "Stop" : "Start"}</button
-        >
-      </div>
-    </div>
-  </div>
+  <button class="fixed z-50 bottom-10 right-8 drop-shadow-lg btn btn-primary hover:animate-pulse" on:click={startStop}
+  >{$isConnected ? "Stop" : "Start"}</button
+>
 </div>
