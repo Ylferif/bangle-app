@@ -10,6 +10,7 @@
   } from "./lib/logic/requests";
   import { connection,isConnected } from "./lib/logic/stores";
   import NextAlarm from "./lib/NextAlarm.svelte";
+import SetAlarm from "./lib/SetAlarm.svelte";
   import Steps from "./lib/Steps.svelte";
   import Temperature from "./lib/Temperature.svelte";
   import Weather from "./lib/Weather.svelte";
@@ -29,6 +30,7 @@
 
 <div class="flex flex-col justify-center items-center gap-8 p-10">
   <Weather />
+  <SetAlarm />
   <NextAlarm />
   <Temperature />
   <Steps />

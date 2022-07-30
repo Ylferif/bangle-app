@@ -1,4 +1,5 @@
-import { derived, Readable, writable } from "svelte/store";
+import { derived, writable } from "svelte/store";
+import type { Readable } from "svelte/store";
 import { connect } from "./ble";
 import type { IPuckConnection } from "./puck";
 

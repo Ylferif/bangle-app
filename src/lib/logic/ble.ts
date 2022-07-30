@@ -1,4 +1,6 @@
-import Puck, { IPuckConnection } from "./puck";
+
+import type { IPuckConnection } from "./puck";
+import Puck from "./puck";
 
 export function runCode(connection: IPuckConnection, code: string): Promise<void> {
   return new Promise((resolve) => connection.write(`\x03\x10if(1){${code}}\n`, resolve));
